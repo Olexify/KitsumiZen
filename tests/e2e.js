@@ -9,7 +9,7 @@ const EXT = path.resolve(__dirname, "..");
 const MOCK = `<html><body style="margin:0"><div class="html5-video-player" style="position:relative;width:640px;height:360px">
 <video></video><div class="ytp-chrome-bottom"></div><div class="ytp-ce-element"></div>
 <div class="ytp-bezel"></div><div class="ytp-speedmaster-overlay"></div>
-<div class="ytp-caption-window-container"></div></div></body></html>`;
+<div class="ytp-caption-window-container"></div></div><div id="below">below</div><div id="masthead-container">m</div></body></html>`;
 
 (async () => {
   // Unpacked extension ids are derived from the folder path.
@@ -59,6 +59,48 @@ const MOCK = `<html><body style="margin:0"><div class="html5-video-player" style
     }
     await p.mouse.move(700, 500); await settle();
     assert.ok(await p.$eval(".kz-cursor", (e) => e.classList.contains("kz-off")), "pointer hides outside player");
+
+    // new options
+    await set({ hideCaptions: true }); await settle();
+    assert.equal(await shown(".ytp-caption-window-container"), false, "captions hide on request");
+    await set({ hideCaptions: false, hidePage: true }); await settle();
+    assert.equal(await shown("#below"), false, "rest of page hidden");
+    assert.equal(await shown(".html5-video-player"), true, "player itself stays");
+    await set({ hidePage: false }); await settle();
+    assert.equal(await shown("#below"), true, "page returns when option off");
+
+    await set({ hotkey: "Ctrl+Alt+KeyK" }); await settle();
+    await p.keyboard.press("Alt+Shift+KeyZ"); await settle();
+    assert.equal(await shown(".ytp-chrome-bottom"), false, "old hotkey ignored");
+    await p.keyboard.press("Control+Alt+KeyK"); await settle();
+    assert.equal(await shown(".ytp-chrome-bottom"), true, "custom hotkey toggles");
+    await p.keyboard.press("Control+Alt+KeyK"); await settle();
+    await set({ hotkey: "K" }); await settle(); // invalid -> default
+    await p.keyboard.press("Alt+Shift+KeyZ"); await settle();
+    assert.equal(await shown(".ytp-chrome-bottom"), true, "invalid hotkey falls back to default");
+    await p.keyboard.press("Alt+Shift+KeyZ"); await settle();
+
+    await set({ cursor: "ring", idleHide: 1, cursorOpacity: 50 }); await settle();
+    await p.mouse.move(120, 120); await p.mouse.move(200, 150, { steps: 3 });
+    assert.equal(await p.$eval(".kz-cursor", (e) => e.classList.contains("kz-idle")), false, "not idle while moving");
+    await p.waitForTimeout(1500);
+    assert.equal(await p.$eval(".kz-cursor", (e) => e.classList.contains("kz-idle")), true, "fades when idle");
+    await p.mouse.move(220, 160);
+    assert.equal(await p.$eval(".kz-cursor", (e) => e.classList.contains("kz-idle")), false, "wakes on move");
+    assert.equal(await p.evaluate(() => document.documentElement.style.getPropertyValue("--kz-opacity")), "0.5", "opacity applied");
+    await set({ idleHide: 0, cursorOpacity: 100 });
+
+    // fullscreen scope: idle outside fullscreen, active inside
+    await set({ scope: "fullscreen", cursor: "hidden" }); await settle();
+    assert.equal(await shown(".ytp-chrome-bottom"), true, "scope=fullscreen: UI visible when not fullscreen");
+    await p.mouse.click(300, 200);
+    await p.evaluate(() => document.querySelector(".html5-video-player").requestFullscreen()).catch(() => {});
+    await settle();
+    if (await p.evaluate(() => !!document.fullscreenElement)) {
+      assert.equal(await shown(".ytp-chrome-bottom"), false, "scope=fullscreen: hidden in fullscreen");
+    } else console.log("e2e: fullscreen unavailable in this browser, skipped that check");
+    await p.evaluate(() => document.exitFullscreen()).catch(() => {});
+    await set({ scope: "always" }); await settle();
 
     await set({ cursor: "system" }); await settle();
     assert.equal(await p.$(".kz-cursor"), null, "no custom pointer in system mode");

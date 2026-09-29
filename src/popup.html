@@ -3,8 +3,19 @@
 <body>
   <h1>KitsumiZen</h1>
   <label class="row"><span>Hide player UI</span><input type="checkbox" id="enabled"></label>
-  <hr>
-  <label class="row"><span>Pointer</span>
+  <label class="row"><span>Apply</span>
+    <select id="scope"><option value="always">Always</option><option value="fullscreen">Only in fullscreen</option></select>
+  </label>
+  <label class="row"><span>Hotkey</span><input type="text" id="hotkey" readonly title="Click, then press a combo with Ctrl/Alt"></label>
+
+  <h2>Hide</h2>
+  <label class="row"><span>Seek / volume popups</span><input type="checkbox" id="hideSeek"></label>
+  <label class="row"><span>Hold-to-speed 2x</span><input type="checkbox" id="hideSpeed"></label>
+  <label class="row"><span>Captions</span><input type="checkbox" id="hideCaptions"></label>
+  <label class="row"><span>Rest of the page</span><input type="checkbox" id="hidePage"></label>
+
+  <h2>Pointer</h2>
+  <label class="row"><span>Style</span>
     <select id="cursor">
       <option value="hidden">Hidden</option>
       <option value="system">System</option>
@@ -18,11 +29,13 @@
   </label>
   <label class="row"><span>Color</span><input type="color" id="cursorColor"></label>
   <label class="row"><span>Size</span><input type="range" id="cursorSize" min="12" max="56" step="2"></label>
+  <label class="row"><span>Opacity</span><input type="range" id="cursorOpacity" min="20" max="100" step="5"></label>
+  <label class="row"><span>Fade when idle</span>
+    <select id="idleHide"><option value="0">Never</option><option value="1">1 s</option><option value="2">2 s</option><option value="3">3 s</option><option value="5">5 s</option></select>
+  </label>
   <label class="row"><span>Click ripple</span><input type="checkbox" id="ripple"></label>
-  <hr>
-  <label class="row"><span>Hide seek / volume popups</span><input type="checkbox" id="hideSeek"></label>
-  <label class="row"><span>Hide hold-to-speed 2x</span><input type="checkbox" id="hideSpeed"></label>
-  <p class="hint">Shortcut on YouTube: <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>Z</kbd></p>
+
+  <p class="hint" id="hint"></p>
   <script src="defaults.js"></script>
   <script src="popup.js"></script>
 </body></html>

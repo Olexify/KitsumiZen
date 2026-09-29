@@ -15,17 +15,18 @@ Captions are left alone.
 ## Use
 
 - Click the toolbar icon and toggle **Hide player UI**, or
-- press **Alt+Shift+Z** while on YouTube.
+- press **Alt+Shift+Z** while on YouTube (change it in the popup: click the Hotkey field and press a new combo that includes Ctrl, Alt or Cmd).
 
 Settings are remembered. Default is on.
 
 ### Options (toolbar popup)
 
-- **Pointer**: Hidden (default), System, or a custom pointer drawn over the video: Dot, Ring (smooth), Crosshair,
-  Glow (smooth), Arrow, Comet trail. Pick a color and size; optional click ripple.
+- **Apply**: always, or only while the player is fullscreen.
+- **Hide**: seek / volume popups (the "+5 seconds" flash), the hold-to-speed "2x" indicator, captions, and optionally the rest of the page
+  (header, sidebar, comments; best effort since the layout is YouTube's own).
+- **Pointer**: Hidden (default), System, or a custom pointer drawn over the video: Dot, Ring (smooth), Crosshair, Glow (smooth),
+  Arrow, Comet trail. Choose color, size, opacity, fade-when-idle delay and an optional click ripple.
   Custom pointers are drawn inside the player, so they also show in fullscreen and in screen recordings.
-- **Hide seek / volume popups**: the "+5 seconds" / "-10 seconds" flash from arrow keys or double-tap, plus volume and speed-change flashes.
-- **Hide hold-to-speed 2x**: the "2x" indicator shown while you hold to speed up.
 
 ## Install
 

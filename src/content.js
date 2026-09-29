@@ -3,7 +3,7 @@
 (() => {
   const api = globalThis.browser ?? globalThis.chrome;
   const root = document.documentElement;
-  const { DEFAULTS, normalize } = globalThis.KZ;
+  const { DEFAULTS, normalize, hotkeyOf } = globalThis.KZ;
   const CUSTOM = new Set(["dot", "ring", "crosshair", "glow", "arrow", "trail"]);
   const EASED = new Set(["ring", "glow"]);
   const TRAIL_LEN = 9;
@@ -12,19 +12,26 @@
   const flag = (name, on) =>
     on ? root.setAttribute(name, "") : root.removeAttribute(name);
 
+  // Zen applies when enabled, and (in "fullscreen" scope) only while fullscreen.
+  const zenOn = () => S.enabled && (S.scope === "always" || !!document.fullscreenElement);
+
   function apply() {
-    flag("data-kitsumizen", S.enabled);
+    flag("data-kitsumizen", zenOn());
     flag("data-kz-seek", S.hideSeek);
     flag("data-kz-speed", S.hideSpeed);
+    flag("data-kz-captions", S.hideCaptions);
+    flag("data-kz-page", S.hidePage);
     root.setAttribute("data-kz-cursor", S.cursor);
     root.style.setProperty("--kz-color", S.cursorColor);
     root.style.setProperty("--kz-size", `${S.cursorSize}px`);
+    root.style.setProperty("--kz-opacity", S.cursorOpacity / 100);
     syncCursor();
   }
+  document.addEventListener("fullscreenchange", apply);
 
   // ---------- custom pointer ----------
   let box = null, ptr = null, trail = [];
-  let active = false, raf = 0;
+  let active = false, raf = 0, idleTimer = 0;
   let mx = 0, my = 0, tx = 0, ty = 0, cx = 0, cy = 0, player = null, snap = true;
 
   function build() {
@@ -38,7 +45,7 @@
   }
 
   function syncCursor() {
-    const want = S.enabled && CUSTOM.has(S.cursor);
+    const want = zenOn() && CUSTOM.has(S.cursor);
     if (want && !active) {
       active = true;
       if (!box) build();
@@ -53,6 +60,7 @@
       window.removeEventListener("pointerup", onUp, true);
       document.documentElement.removeEventListener("pointerleave", hide);
       cancelAnimationFrame(raf); raf = 0;
+      clearTimeout(idleTimer);
       box?.remove();
     }
     if (!active) return;
@@ -72,6 +80,13 @@
     }
   }
 
+  // Fade the pointer out after `idleHide` seconds without movement.
+  function wake() {
+    box.classList.remove("kz-idle");
+    clearTimeout(idleTimer);
+    if (S.idleHide > 0) idleTimer = setTimeout(() => box.classList.add("kz-idle"), S.idleHide * 1000);
+  }
+
   function hide() { box?.classList.add("kz-off"); }
 
   function onMove(e) {
@@ -83,6 +98,7 @@
     mx = e.clientX; my = e.clientY;
     if (snap || box.classList.contains("kz-off")) { snap = true; measure(); }
     box.classList.remove("kz-off");
+    wake();
     if (!raf) raf = requestAnimationFrame(tick);
   }
 
@@ -142,9 +158,9 @@
     });
   } catch (_) { /* storage unavailable: defaults stay */ }
 
-  // Hotkey: Alt+Shift+Z toggles. Capture phase so YouTube can't swallow it.
+  // Hotkey (default Alt+Shift+Z) toggles. Capture phase so YouTube can't swallow it.
   window.addEventListener("keydown", (e) => {
-    if (e.altKey && e.shiftKey && !e.ctrlKey && !e.metaKey && e.code === "KeyZ") {
+    if (hotkeyOf(e) === S.hotkey) {
       e.preventDefault();
       S.enabled = !S.enabled;
       apply();

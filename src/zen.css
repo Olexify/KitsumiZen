@@ -83,7 +83,9 @@ html[data-kitsumizen][data-kz-speed] .ytp-speedmaster-label {
 .kz-cursor {
   position: absolute; inset: 0; z-index: 2147483647;
   pointer-events: none; overflow: hidden;
+  opacity: var(--kz-opacity, 1); transition: opacity .35s ease;
 }
+.kz-cursor.kz-idle { opacity: 0; }
 .kz-cursor.kz-off { display: none; }
 .kz-ptr, .kz-t {
   position: absolute; left: 0; top: 0; will-change: transform;
@@ -151,3 +153,30 @@ html[data-kitsumizen][data-kz-speed] .ytp-speedmaster-label {
   from { transform: translate(var(--x), var(--y)) scale(.3); opacity: .9; }
   to   { transform: translate(var(--x), var(--y)) scale(2.4); opacity: 0; }
 }
+
+/* Optional: hide captions */
+html[data-kitsumizen][data-kz-captions] .ytp-caption-window-container,
+html[data-kitsumizen][data-kz-captions] .caption-window {
+  display: none !important;
+}
+
+/* Optional: hide the rest of the page (best effort; layout is YouTube's own) */
+html[data-kitsumizen][data-kz-page],
+html[data-kitsumizen][data-kz-page] body { background: #000 !important; }
+html[data-kitsumizen][data-kz-page] #masthead-container,
+html[data-kitsumizen][data-kz-page] ytd-masthead,
+html[data-kitsumizen][data-kz-page] tp-yt-app-drawer,
+html[data-kitsumizen][data-kz-page] ytd-mini-guide-renderer,
+html[data-kitsumizen][data-kz-page] #guide,
+html[data-kitsumizen][data-kz-page] #secondary,
+html[data-kitsumizen][data-kz-page] #below,
+html[data-kitsumizen][data-kz-page] #comments,
+html[data-kitsumizen][data-kz-page] ytd-watch-metadata,
+html[data-kitsumizen][data-kz-page] ytd-merch-shelf-renderer,
+html[data-kitsumizen][data-kz-page] ytd-engagement-panel-section-list-renderer,
+html[data-kitsumizen][data-kz-page] yt-live-chat-renderer,
+html[data-kitsumizen][data-kz-page] #chat {
+  display: none !important;
+}
+html[data-kitsumizen][data-kz-page] ytd-app { --ytd-masthead-height: 0px; }
+html[data-kitsumizen][data-kz-page] #page-manager { margin-top: 0 !important; }
