@@ -48,6 +48,11 @@ navigation and player re-renders with no observers or polling. No data is collec
 
 If YouTube renames a class, add the new selector to `src/zen.css`.
 
+## Development
+
+`npm install && npm test` runs an end-to-end check in Chromium against a mock player page (no network).
+Set `CHROME_PATH` if Playwright can't find a browser. Settings defaults and validation live in `src/defaults.js`.
+
 ## License
 
 MIT

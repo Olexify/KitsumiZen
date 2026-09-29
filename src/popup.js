@@ -1,9 +1,7 @@
 const api = globalThis.browser ?? globalThis.chrome;
-const DEFAULTS = {
-  enabled: true, cursor: "hidden", cursorColor: "#ffffff", cursorSize: 22,
-  ripple: true, hideSeek: true, hideSpeed: true,
-};
-api.storage.local.get(DEFAULTS, (saved) => {
+const { DEFAULTS, normalize } = globalThis.KZ;
+api.storage.local.get(DEFAULTS, (raw) => {
+  const saved = normalize(raw);
   for (const key in DEFAULTS) {
     const el = document.getElementById(key);
     const isBool = typeof DEFAULTS[key] === "boolean";

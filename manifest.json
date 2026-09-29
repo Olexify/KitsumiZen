@@ -14,7 +14,7 @@
     {
       "matches": ["*://*.youtube.com/*", "*://*.youtube-nocookie.com/embed/*"],
       "css": ["src/zen.css"],
-      "js": ["src/content.js"],
+      "js": ["src/defaults.js", "src/content.js"],
       "run_at": "document_start",
       "all_frames": true
     }

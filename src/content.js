@@ -3,19 +3,11 @@
 (() => {
   const api = globalThis.browser ?? globalThis.chrome;
   const root = document.documentElement;
-  const DEFAULTS = {
-    enabled: true,
-    cursor: "hidden", // hidden | system | dot | ring | crosshair | glow | arrow | trail
-    cursorColor: "#ffffff",
-    cursorSize: 22,
-    ripple: true,
-    hideSeek: true,
-    hideSpeed: true,
-  };
+  const { DEFAULTS, normalize } = globalThis.KZ;
   const CUSTOM = new Set(["dot", "ring", "crosshair", "glow", "arrow", "trail"]);
   const EASED = new Set(["ring", "glow"]);
   const TRAIL_LEN = 9;
-  let S = { ...DEFAULTS };
+  let S = normalize();
 
   const flag = (name, on) =>
     on ? root.setAttribute(name, "") : root.removeAttribute(name);
@@ -33,7 +25,7 @@
   // ---------- custom pointer ----------
   let box = null, ptr = null, trail = [];
   let active = false, raf = 0;
-  let tx = 0, ty = 0, cx = 0, cy = 0, player = null, snap = true;
+  let mx = 0, my = 0, tx = 0, ty = 0, cx = 0, cy = 0, player = null, snap = true;
 
   function build() {
     box = document.createElement("div");
@@ -53,13 +45,13 @@
       window.addEventListener("pointermove", onMove, true);
       window.addEventListener("pointerdown", onDown, true);
       window.addEventListener("pointerup", onUp, true);
-      document.addEventListener("mouseleave", hide, true);
+      document.documentElement.addEventListener("pointerleave", hide);
     } else if (!want && active) {
       active = false;
       window.removeEventListener("pointermove", onMove, true);
       window.removeEventListener("pointerdown", onDown, true);
       window.removeEventListener("pointerup", onUp, true);
-      document.removeEventListener("mouseleave", hide, true);
+      document.documentElement.removeEventListener("pointerleave", hide);
       cancelAnimationFrame(raf); raf = 0;
       box?.remove();
     }
@@ -83,24 +75,32 @@
   function hide() { box?.classList.add("kz-off"); }
 
   function onMove(e) {
+    if (e.pointerType === "touch") return;
     const p = e.target instanceof Element ? e.target.closest(".html5-video-player") : null;
     if (!p) return hide();
     if (box.parentNode !== p) { p.appendChild(box); snap = true; }
     player = p;
-    const r = p.getBoundingClientRect();
-    tx = e.clientX - r.left;
-    ty = e.clientY - r.top;
-    if (snap || box.classList.contains("kz-off")) {
+    mx = e.clientX; my = e.clientY;
+    if (snap || box.classList.contains("kz-off")) { snap = true; measure(); }
+    box.classList.remove("kz-off");
+    if (!raf) raf = requestAnimationFrame(tick);
+  }
+
+  // Player-relative target position; measured once per frame, not per event.
+  function measure() {
+    const r = player.getBoundingClientRect();
+    tx = mx - r.left;
+    ty = my - r.top;
+    if (snap) {
       cx = tx; cy = ty; snap = false;
       trail.forEach((t) => { t.x = tx; t.y = ty; });
     }
-    box.classList.remove("kz-off");
-    if (!raf) raf = requestAnimationFrame(tick);
   }
 
   function tick() {
     raf = 0;
     if (!active || box.classList.contains("kz-off")) return;
+    measure();
     const f = EASED.has(S.cursor) ? 0.22 : 1;
     cx += (tx - cx) * f;
     cy += (ty - cy) * f;
@@ -132,10 +132,12 @@
   // ---------- settings ----------
   apply(); // defaults immediately (no flash of UI), then saved values
   try {
-    api.storage.local.get(DEFAULTS, (res) => { if (res) { S = { ...DEFAULTS, ...res }; apply(); } });
+    api.storage.local.get(DEFAULTS, (res) => { if (res) { S = normalize(res); apply(); } });
     api.storage.onChanged.addListener((changes, area) => {
       if (area !== "local") return;
-      for (const k in changes) if (k in DEFAULTS) S[k] = changes[k].newValue ?? DEFAULTS[k];
+      const next = { ...S };
+      for (const k in changes) if (k in DEFAULTS) next[k] = changes[k].newValue;
+      S = normalize(next);
       apply();
     });
   } catch (_) { /* storage unavailable: defaults stay */ }
