@@ -40,9 +40,6 @@ html[data-kitsumizen] .iv-branding,
 html[data-kitsumizen] .ytp-suggested-action,
 html[data-kitsumizen] .ytp-paid-content-overlay,
 html[data-kitsumizen] .ytp-youtube-button,
-html[data-kitsumizen] .ytp-bezel,
-html[data-kitsumizen] .ytp-bezel-text-wrapper,
-html[data-kitsumizen] .ytp-doubletap-ui-legacy,
 html[data-kitsumizen] .ytp-spinner,
 html[data-kitsumizen] .ytp-player-content:not(.ytp-subtitles-player-content),
 html[data-kitsumizen] .ytp-iv-video-content,
@@ -60,7 +57,97 @@ html[data-kitsumizen] .ytp-ce-shadow {
 }
 
 /* No mouse cursor sitting on the footage */
-html[data-kitsumizen] .html5-video-player,
-html[data-kitsumizen] .html5-video-player * {
+html[data-kitsumizen]:not([data-kz-cursor="system"]) .html5-video-player,
+html[data-kitsumizen]:not([data-kz-cursor="system"]) .html5-video-player * {
   cursor: none !important;
+}
+
+/* Optional: "+5 seconds" / volume / speed-change flashes and double-tap seek UI */
+html[data-kitsumizen][data-kz-seek] .ytp-bezel,
+html[data-kitsumizen][data-kz-seek] .ytp-bezel-text-wrapper,
+html[data-kitsumizen][data-kz-seek] .ytp-doubletap-ui-legacy,
+html[data-kitsumizen][data-kz-seek] .ytp-doubletap-static-circle,
+html[data-kitsumizen][data-kz-seek] .ytp-doubletap-tooltip,
+html[data-kitsumizen][data-kz-seek] .ytp-doubletap-seek-info-container,
+/* Optional: hold-to-speed-up "2x" indicator */
+html[data-kitsumizen][data-kz-speed] .ytp-speedmaster-overlay,
+html[data-kitsumizen][data-kz-speed] .ytp-speedmaster-user-edu,
+html[data-kitsumizen][data-kz-speed] .ytp-speedmaster-label {
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+/* ---------- Custom pointer (drawn by content.js inside the player) ---------- */
+.kz-cursor {
+  position: absolute; inset: 0; z-index: 2147483647;
+  pointer-events: none; overflow: hidden;
+}
+.kz-cursor.kz-off { display: none; }
+.kz-ptr, .kz-t {
+  position: absolute; left: 0; top: 0; will-change: transform;
+  width: var(--kz-size, 22px); height: var(--kz-size, 22px);
+  margin: calc(var(--kz-size, 22px) / -2) 0 0 calc(var(--kz-size, 22px) / -2);
+}
+.kz-shape { position: absolute; inset: 0; transition: transform .15s ease; }
+.kz-down .kz-shape { transform: scale(.7); }
+.kz-shape::before, .kz-shape::after { content: ""; position: absolute; }
+
+/* dot */
+.kz-cursor[data-style="dot"] .kz-shape::before {
+  inset: 25%; border-radius: 50%; background: var(--kz-color, #fff);
+  box-shadow: 0 0 0 1.5px rgba(0,0,0,.35), 0 2px 8px rgba(0,0,0,.35);
+}
+/* ring (eased) with center dot */
+.kz-cursor[data-style="ring"] .kz-shape::before {
+  inset: 0; border-radius: 50%; border: 2px solid var(--kz-color, #fff);
+  box-sizing: border-box; box-shadow: 0 0 0 1px rgba(0,0,0,.3), inset 0 0 0 1px rgba(0,0,0,.2);
+}
+.kz-cursor[data-style="ring"] .kz-shape::after {
+  inset: 42%; border-radius: 50%; background: var(--kz-color, #fff);
+}
+/* crosshair */
+.kz-cursor[data-style="crosshair"] .kz-shape::before {
+  left: 0; right: 0; top: 50%; height: 2px; margin-top: -1px;
+  background: var(--kz-color, #fff); box-shadow: 0 0 0 1px rgba(0,0,0,.3);
+}
+.kz-cursor[data-style="crosshair"] .kz-shape::after {
+  top: 0; bottom: 0; left: 50%; width: 2px; margin-left: -1px;
+  background: var(--kz-color, #fff); box-shadow: 0 0 0 1px rgba(0,0,0,.3);
+}
+/* soft glow (eased) */
+.kz-cursor[data-style="glow"] .kz-shape::before {
+  inset: 0; border-radius: 50%; transform: scale(2.4);
+  background: radial-gradient(circle, var(--kz-color, #fff) 0%, transparent 68%); opacity: .85;
+}
+.kz-cursor[data-style="glow"] .kz-shape::after {
+  inset: 38%; border-radius: 50%; background: #fff; box-shadow: 0 0 10px var(--kz-color, #fff);
+}
+/* arrow (hot spot top-left) */
+.kz-cursor[data-style="arrow"] .kz-ptr { margin: calc(var(--kz-size, 22px) * -.125) 0 0 calc(var(--kz-size, 22px) * -.125); }
+.kz-cursor[data-style="arrow"] .kz-shape::before {
+  inset: 0; background: var(--kz-color, #fff);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M3 2l16 9-7 2 4 8-3 1.500-4-8-6 5z'/%3E%3C/svg%3E") center/contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M3 2l16 9-7 2 4 8-3 1.500-4-8-6 5z'/%3E%3C/svg%3E") center/contain no-repeat;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,.6));
+}
+/* trail: dot head + fading comet tail */
+.kz-cursor[data-style="trail"] .kz-shape::before {
+  inset: 25%; border-radius: 50%; background: var(--kz-color, #fff);
+  box-shadow: 0 0 12px var(--kz-color, #fff);
+}
+.kz-t { border-radius: 50%; background: var(--kz-color, #fff); }
+
+/* click ripple */
+.kz-ripple {
+  position: absolute; left: 0; top: 0; box-sizing: border-box;
+  width: calc(var(--kz-size, 22px) * 1.4); height: calc(var(--kz-size, 22px) * 1.4);
+  margin: calc(var(--kz-size, 22px) * -.7) 0 0 calc(var(--kz-size, 22px) * -.7);
+  border: 2px solid var(--kz-color, #fff); border-radius: 50%;
+  animation: kz-ripple .55s ease-out forwards;
+}
+@keyframes kz-ripple {
+  from { transform: translate(var(--x), var(--y)) scale(.3); opacity: .9; }
+  to   { transform: translate(var(--x), var(--y)) scale(2.4); opacity: 0; }
 }

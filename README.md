@@ -17,7 +17,15 @@ Captions are left alone.
 - Click the toolbar icon and toggle **Hide player UI**, or
 - press **Alt+Shift+Z** while on YouTube.
 
-The setting is remembered. Default is on.
+Settings are remembered. Default is on.
+
+### Options (toolbar popup)
+
+- **Pointer**: Hidden (default), System, or a custom pointer drawn over the video: Dot, Ring (smooth), Crosshair,
+  Glow (smooth), Arrow, Comet trail. Pick a color and size; optional click ripple.
+  Custom pointers are drawn inside the player, so they also show in fullscreen and in screen recordings.
+- **Hide seek / volume popups**: the "+5 seconds" / "-10 seconds" flash from arrow keys or double-tap, plus volume and speed-change flashes.
+- **Hide hold-to-speed 2x**: the "2x" indicator shown while you hold to speed up.
 
 ## Install
 
