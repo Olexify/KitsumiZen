@@ -1,0 +1,66 @@
+/* KitsumiZen: purely cosmetic. Everything is scoped to html[data-kitsumizen],
+   which the content script toggles. The player itself is never replaced. */
+
+/* Control bar, title bar, progress bar, gradients */
+html[data-kitsumizen] .ytp-chrome-top,
+html[data-kitsumizen] .ytp-chrome-bottom,
+html[data-kitsumizen] .ytp-gradient-top,
+html[data-kitsumizen] .ytp-gradient-bottom,
+html[data-kitsumizen] .ytp-progress-bar-container,
+html[data-kitsumizen] .ytp-fine-scrubbing-container,
+html[data-kitsumizen] .ytp-heat-map-container,
+html[data-kitsumizen] .ytp-storyboard-framepreview,
+html[data-kitsumizen] .ytp-miniplayer-ui,
+html[data-kitsumizen] .ytp-fullscreen-grid,
+html[data-kitsumizen] .ytp-fullscreen-quick-actions,
+
+/* Popups, tooltips, menus */
+html[data-kitsumizen] .ytp-tooltip,
+html[data-kitsumizen] .ytp-popup,
+html[data-kitsumizen] .ytp-settings-menu,
+html[data-kitsumizen] .ytp-contextmenu,
+html[data-kitsumizen] .ytp-sb,
+html[data-kitsumizen] .ytp-info-panel-preview,
+html[data-kitsumizen] .ytp-info-panel-detail-skrim,
+
+/* Overlays, cards, end screens, watermark, badges */
+html[data-kitsumizen] .ytp-pause-overlay-container,
+html[data-kitsumizen] .ytp-pause-overlay,
+html[data-kitsumizen] .ytp-ce-element,
+html[data-kitsumizen] .ytp-ce-covering-overlay,
+html[data-kitsumizen] .ytp-cards-teaser,
+html[data-kitsumizen] .ytp-cards-button,
+html[data-kitsumizen] .ytp-endscreen-content,
+html[data-kitsumizen] .ytp-endscreen-previous,
+html[data-kitsumizen] .ytp-endscreen-next,
+html[data-kitsumizen] .ytp-videowall-still,
+html[data-kitsumizen] .ytp-autonav-endscreen-countdown-container,
+html[data-kitsumizen] .ytp-watermark,
+html[data-kitsumizen] .iv-branding,
+html[data-kitsumizen] .ytp-suggested-action,
+html[data-kitsumizen] .ytp-paid-content-overlay,
+html[data-kitsumizen] .ytp-youtube-button,
+html[data-kitsumizen] .ytp-bezel,
+html[data-kitsumizen] .ytp-bezel-text-wrapper,
+html[data-kitsumizen] .ytp-doubletap-ui-legacy,
+html[data-kitsumizen] .ytp-spinner,
+html[data-kitsumizen] .ytp-player-content:not(.ytp-subtitles-player-content),
+html[data-kitsumizen] .ytp-iv-video-content,
+html[data-kitsumizen] .annotation,
+html[data-kitsumizen] .video-annotations,
+html[data-kitsumizen] .ytp-ad-persistent-progress-bar-container,
+html[data-kitsumizen] .ytp-gated-actions-overlay,
+html[data-kitsumizen] .ytp-remote,
+html[data-kitsumizen] .ytp-share-panel,
+html[data-kitsumizen] .ytp-ce-shadow {
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+/* No mouse cursor sitting on the footage */
+html[data-kitsumizen] .html5-video-player,
+html[data-kitsumizen] .html5-video-player * {
+  cursor: none !important;
+}

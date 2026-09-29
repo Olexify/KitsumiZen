@@ -1,0 +1,6 @@
+:root { color-scheme: light dark; }
+body { width: 230px; margin: 0; padding: 14px; font: 14px system-ui, sans-serif; }
+h1 { font-size: 15px; margin: 0 0 12px; }
+.row { display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+.hint { margin: 12px 0 0; font-size: 12px; opacity: .7; }
+kbd { border: 1px solid currentColor; border-radius: 3px; padding: 0 3px; font-size: 11px; }
